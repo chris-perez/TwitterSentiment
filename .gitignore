@@ -1,7 +1,8 @@
+logs
 target
-*.class
-*.iml
-*.ipr
-*.iws
-.idea
-out
+/.idea
+/.idea_modules
+/.classpath
+/.project
+/.settings
+/RUNNING_PID
