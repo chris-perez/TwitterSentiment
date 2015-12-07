@@ -32,7 +32,11 @@
 </body>
 <script>
     window.onload = function(){
-    // Provide your access token
+    //http://leafletjs.com/examples/geojson.html
+    var stateStyle = [{
+    "type" : "Feature",
+    "properties" : {"NAME": "Colorado"}
+    }];
     L.mapbox.accessToken = 'pk.eyJ1IjoibHVrZXppbTUiLCJhIjoiV0tta2p0QSJ9.sU76UnZ2bZSQap5uY6XDAA';
     // Create a map in the div #map
     var state = document.getElementById('state');
@@ -41,15 +45,15 @@
         url: '/assets/geoJson/gz_2010_us_040_00_5m.json',
         dataType: 'json',
         success: function load(d) {
-            states = L.geoJson(d).on('click', function(e){console.log(e.layer.feature.properties.NAME)}).addTo(map);
+            states = L.geoJson(d, {
+            style : function(feature) {
+                switch (feature.properties.NAME){
+                    case 'Colorado' : return {color : "#ff0000"};
+                    }
+                }
+            }).on('click', function(e){console.log(e.layer.feature.properties.NAME)}).addTo(map);
         }
     });
-
-    //event stuff
-    map.on('click', function(e){
-        //var test = new Array(state._layers);
-        console.log(states._layers[0]);
-    })
 }
 </script>
 </html>
