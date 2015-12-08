@@ -11,49 +11,39 @@
     <style>
         body { margin:0; padding:0; }
         #map { position:absolute; top:0; bottom:0; width:100%; }
-        .state {
-        position:absolute;
-        top:10px;
-        right:10px;
-        z-index:1000;
-        }
-        .state strong {
-        background:#404040;
-        color:#fff;
-        display:block;
-        padding:10px;
-        border-radius:3px;
-        }
     </style>
 </head>
 <body>
     <div id='map' class='state'></div>
-    <div id='state' class='state'></div>
 </body>
-<script>
-    window.onload = function(){
-    //http://leafletjs.com/examples/geojson.html
-    var stateStyle = [{
-    "type" : "Feature",
-    "properties" : {"NAME": "Colorado"}
-    }];
-    L.mapbox.accessToken = 'pk.eyJ1IjoibHVrZXppbTUiLCJhIjoiV0tta2p0QSJ9.sU76UnZ2bZSQap5uY6XDAA';
-    // Create a map in the div #map
-    var state = document.getElementById('state');
-    var map = L.mapbox.map('map', 'mapbox.streets').setView([39.50,  -98.35], 5);
-    $.ajax({
-        url: '/assets/geoJson/gz_2010_us_040_00_5m.json',
-        dataType: 'json',
-        success: function load(d) {
-            states = L.geoJson(d, {
-            style : function(feature) {
-                switch (feature.properties.NAME){
-                    case 'Colorado' : return {color : "#ff0000"};
+    <script>
+        window.onload = function(){
+
+            L.mapbox.accessToken = 'pk.eyJ1IjoibHVrZXppbTUiLCJhIjoiV0tta2p0QSJ9.sU76UnZ2bZSQap5uY6XDAA';
+            // Create a map in the div #map
+            var state = document.getElementById('state');
+            var map = L.mapbox.map('map', 'mapbox.streets').setView([39.50,  -98.35], 5);
+
+            $.ajax({
+                url: '/assets/geoJson/gz_2010_us_040_00_5m.json',
+                dataType: 'json',
+                success: function load(d) {
+                    states = L.geoJson(d).addTo(map);
                     }
-                }
-            }).on('click', function(e){console.log(e.layer.feature.properties.NAME)}).addTo(map);
+                 });
+            setInterval(function(){
+                $.ajax({
+                    url: '/updatePoly/',
+                    dataType: 'json',
+                    success : function load(e){
+                        states.setStyle(function(feature){
+                            switch (feature.properties.NAME){
+                                case 'Colorado' : return {color : e.color}
+                            }
+                        });
+                    }
+                });
+            }, 5000);
         }
-    });
-}
-</script>
+    </script>
 </html>
