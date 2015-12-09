@@ -6,6 +6,5 @@ package models
 class Tweet (message: String, location: String) {
 
   def getSentiment(){
-
   }
 }

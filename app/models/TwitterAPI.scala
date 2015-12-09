@@ -4,7 +4,7 @@ import javax.inject.Inject
 import com.google.common.base.Charsets
 import com.google.common.io.BaseEncoding
 import play.api.libs.ws._
-import scala.concurrent.Future
+import scala.concurrent.{Await, Future}
 import play.api.libs.json._
 
 import scala.concurrent.duration.Duration
@@ -29,21 +29,20 @@ class TwitterAPI @Inject() (ws: WSClient) {
 
   def getTweets(q: String, result_type: String, lat: Int, long: Int, radius: Int): String = {
     val url = endpoint + "?q=" + q + "&result_type=" + result_type + "&geocode=" + lat + "," + long + "," + radius + "mi"
-    val futureResult: Future[String] = ws.url(url).get().map {
-      response =>
-        (response.json \ "person" \ "name").as[String]
+    bearerToken = Await.result(authorize(), Duration.Inf)
+    val futureResult: Future[String] = ws.url(url).withHeaders("Authorization" -> ("Bearer " + bearerToken)).get().map {
+      response => response.body.toString
     }
-    futureResult[String]
+    Await.result(futureResult, Duration.Inf)
   }
 
   def getTweets(q: String, result_type: String): String = {
     val url = endpoint + "?q=" + q + "&result_type=" + result_type
-    bearerToken = authorize().result(Duration.Inf)
-    val futureResult: Future[String] = ws.url(url).get().map {
-      response => response.json
-        (response.json \ "person" \ "name").as[String]
+    bearerToken = Await.result(authorize(), Duration.Inf)
+    val futureResult: Future[String] = ws.url(url).withHeaders("Authorization" -> ("Bearer " + bearerToken)).get().map {
+      response => response.body.toString
     }
-    futureResult[String]
+    Await.result(futureResult, Duration.Inf)
   }
 
   def getTweetsByHashTag(hashTag: String): String = {
