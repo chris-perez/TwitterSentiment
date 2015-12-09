@@ -10,6 +10,7 @@ import play.api.libs.json.Reads._ // Custom validation helpers
 import play.api.libs.functional.syntax._ // Combinator syntax
 import  scala.concurrent.ExecutionContext.Implicits.global
 
+
 /**
  * Created by chris_000 on 12/5/2015.
  */
@@ -47,9 +48,9 @@ class TwitterAPI @Inject() (ws: WSClient) {
   def authorize(): Future[String] = {
     val url = "https://api.twitter.com/oauth2/token"
     val futureResult: Future[String] = ws.url(url)
-      .withHeaders("Authorization" -> encodedCredentials).get().map {
-      response => response.json.toString()
-    }
+      .withHeaders("Authorization" -> encodedCredentials).get().map(
+        response => "Response: " + response + "\nBody: " + response.body.toString
+      )
     futureResult
   }
 }
