@@ -27,25 +27,35 @@ class TwitterAPI @Inject() (ws: WSClient) {
   var endpoint: String = "https://api.twitter.com/1.1/search/tweets.json"
   var bearerToken = ""
 
-  def getTweets(q: String, result_type: String, lat: Int, long: Int, radius: Int): String = {
+  def formattedTweets(q: String): String = {
+    val json: JsValue = getTweets(q, "recent", 39.50, -98.35, 650)
+    val tweets: Seq[JsValue] = (json \ "statuses").as[JsArray].value
+    var results: String = ""
+    for (t <- tweets) {
+      results += "\nText: " + (t \ "text").as[String]
+    }
+    results
+  }
+
+  def getTweets(q: String, result_type: String, lat: Double, long: Double, radius: Double): JsValue = {
     val url = endpoint + "?q=" + q + "&result_type=" + result_type + "&geocode=" + lat + "," + long + "," + radius + "mi"
     bearerToken = Await.result(authorize(), Duration.Inf)
-    val futureResult: Future[String] = ws.url(url).withHeaders("Authorization" -> ("Bearer " + bearerToken)).get().map {
-      response => response.body.toString
+    val futureResult: Future[JsValue] = ws.url(url).withHeaders("Authorization" -> ("Bearer " + bearerToken)).get().map {
+      response => response.json
     }
     Await.result(futureResult, Duration.Inf)
   }
 
-  def getTweets(q: String, result_type: String): String = {
+  def getTweets(q: String, result_type: String): JsValue = {
     val url = endpoint + "?q=" + q + "&result_type=" + result_type
     bearerToken = Await.result(authorize(), Duration.Inf)
-    val futureResult: Future[String] = ws.url(url).withHeaders("Authorization" -> ("Bearer " + bearerToken)).get().map {
-      response => response.body.toString
+    val futureResult: Future[JsValue] = ws.url(url).withHeaders("Authorization" -> ("Bearer " + bearerToken)).get().map {
+      response => response.json
     }
     Await.result(futureResult, Duration.Inf)
   }
 
-  def getTweetsByHashTag(hashTag: String): String = {
+  def getTweetsByHashTag(hashTag: String): JsValue = {
     getTweets("%23" + hashTag, "recent")
   }
 
