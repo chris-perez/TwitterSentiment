@@ -48,7 +48,7 @@ class TwitterAPI @Inject() (ws: WSClient) {
   def authorize(): Future[String] = {
     val url = "https://api.twitter.com/oauth2/token"
     val futureResult: Future[String] = ws.url(url)
-      .withHeaders("Authorization" -> encodedCredentials).get().map(
+      .withHeaders("Authorization" -> ("Basic " + encodedCredentials)).post(Map("grant_type"-> Seq("client_credentials"))).map(
         response => "Response: " + response + "\nBody: " + response.body.toString
       )
     futureResult
