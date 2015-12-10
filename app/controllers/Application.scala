@@ -46,7 +46,7 @@ class Application @Inject() (ws: WSClient) extends Controller {
    val r = adjustedValue
    val g = 30
    val b = 255 - adjustedValue
-   val hexVal: String = String.format("#%02x%02x%02x", r, g, b)
+   val hexVal: String = "#%02x%02x%02x".format( r, g, b)
     hexVal
   }
 
@@ -67,7 +67,7 @@ class Application @Inject() (ws: WSClient) extends Controller {
     }
     color_by_state
   }
-  def getAvgSentiment( lst: List[Tweet]) = {
+  def getAvgSentiment( lst: List[Tweet]) :Double = {
     var sum = 0.0
     var count = 0.0
     //val analyzer: nlpProcesser = new nlpProcessor
@@ -75,7 +75,7 @@ class Application @Inject() (ws: WSClient) extends Controller {
       sum += NlpProcessor.getSentiment(item.text)
       count += 1.0
     }
-    return sum/count
+    sum/count
   }
   def getTweets() = Action {
     val api = new TwitterAPI(ws)
