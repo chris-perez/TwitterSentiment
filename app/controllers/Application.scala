@@ -1,11 +1,24 @@
 package controllers
 
+import _root_.models.TwitterAPI
 import nlp.NlpProcessor
 import play.api.mvc._
 import play.api.libs.json._
 import edu.stanford.nlp._
+import javax.inject.Inject
 
-class Application extends Controller {
+import models.TwitterAPI
+import play.api._
+import play.api.libs.ws.WSClient
+import play.api.mvc._
+import play.api.libs.json._
+
+import scala.concurrent.Future
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import scala.concurrent.duration._
+
+
+class Application @Inject() (ws: WSClient) extends Controller {
 
   def index = Action {
     Ok(views.html.map())
@@ -22,11 +35,30 @@ class Application extends Controller {
 
   def getSentiment(text : String) = Action {
 
-    val score : Int =  NlpProcessor.getSentiment(text)
+    val score: Int = NlpProcessor.getSentiment(text)
     val json: JsValue = JsObject(Seq(
       "Score" -> JsNumber(score)
     ))
     Ok(json)
+
   }
+  def getTweets(){
+    val api = new TwitterAPI(ws)
+    val tweets = api.getStateTweets("donaldtrump")
+    val tweetList:JsArray = Json.arr()
+
+    for (t <- tweets) {
+      tweetList.append(Json.obj(
+        "text" -> t.text,
+        "state" -> t.state.name
+      ))
+    }
+
+    Ok(tweetList)
+//    Ok(api.authorize())
+//    Ok(api.getTweets("donaldtrump", "recent"))
+//    Ok(api.formattedTweets("donaldtrump"))
+  }
+
 
 }
