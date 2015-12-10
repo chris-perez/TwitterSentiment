@@ -16,8 +16,9 @@ class Application @Inject() (ws: WSClient) extends Controller {
 
   def index = Action {
     val api = new TwitterAPI(ws)
+    Ok(api.authorize())
 //    Ok(api.getTweets("donaldtrump", "recent"))
-    Ok(api.formattedTweets("donaldtrump"))
+//    Ok(api.formattedTweets("donaldtrump"))
   }
 
 }
