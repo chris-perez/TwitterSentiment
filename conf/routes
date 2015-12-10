@@ -9,5 +9,7 @@ GET     /updatePoly/                controllers.Application.getPoly()
 
 GET     /getSentiment/:text         controllers.Application.getSentiment(text : String)
 
+GET     /tweets                     controllers.Application.getTweets()
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

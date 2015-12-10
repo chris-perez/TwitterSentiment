@@ -6,6 +6,8 @@ import com.google.common.io.BaseEncoding
 import play.api.libs.ws._
 import scala.concurrent.{Await, Future}
 import play.api.libs.json._
+import play.api._
+import play.api.Play.current
 
 import scala.concurrent.duration.Duration
 
@@ -26,31 +28,34 @@ class TwitterAPI @Inject() (ws: WSClient) {
 
   var endpoint: String = "https://api.twitter.com/1.1/search/tweets.json"
   var bearerToken = authorize()
-  val stateNames = List("Alabama","Alaska","Arizona","Arkansas","California","Colorado","Connecticut","Delaware",
+  /*val stateNames = List("Alabama","Alaska","Arizona","Arkansas","California","Colorado","Connecticut","Delaware",
     "Florida","Georgia","Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland",
     "Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","NewHampshire",
     "NewJersey","NewMexico","NewYork","NorthCarolina","NorthDakota","Ohio","Oklahoma","Oregon","Pennsylvania",
     "RhodeIsland","South Carolina","SouthDakota","Tennessee","Texas","Utah","Vermont","Virginia","Washington",
-    "WestVirginia","Wisconsin","Wyoming")
+    "WestVirginia","Wisconsin","Wyoming")*/
   var states: List[State] = List()
-  for (n <- stateNames) {
-    try {
-      getState(n) :: states
-    } catch {
-      case ex:Exception =>
-    }
+  var statesJson = Json.parse(Play.classloader.getResourceAsStream("public/json/states.json")).as[JsArray].value
+
+  for (s <- statesJson) {
+    val state = s.as[JsObject]
+    val name = (state\"name").as[String]
+    val id = (state\"id").as[String]
+    states = new State(name, id)::states
   }
 
-  def getStateTweets(q: String): List[Tweet] = {
-    val tweets:List[Tweet] = List()
+  def getStateTweets(q: String): Map[String, List[Tweet]] = {
+    var tweetMap:Map[String, List[Tweet]] = Map()
     for (s <- states) {
+      var tweets:List[Tweet] = List()
       val json = getTweets(q, "recent", s.id)
       val statuses: Seq[JsValue] = (json \ "statuses").as[JsArray].value
       for (t <- statuses) {
-        new Tweet((t \ "text").as[String], s)::tweets
+        tweets = new Tweet((t \ "text").as[String], s)::tweets
       }
+      tweetMap += (s.name -> tweets)
     }
-    tweets
+    tweetMap
   }
 
   def formattedTweets(q: String): String = {

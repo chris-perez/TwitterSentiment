@@ -8,8 +8,9 @@ import play.api.libs.ws.WSClient
 import nlp.NlpProcessor
 import play.api.mvc._
 import play.api.libs.json._
-import edu.stanford.nlp._
+import play.api.Play.current
 
+import edu.stanford.nlp._
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import scala.concurrent.duration._
@@ -42,20 +43,19 @@ class Application @Inject() (ws: WSClient) extends Controller {
 
   def getTweets() = Action {
     val api = new TwitterAPI(ws)
-    val tweets = api.getStateTweets("donaldtrump")
-    val tweetList:JsArray = Json.arr()
+    val tweetMap = api.getStateTweets("donaldtrump")
+    var map:Map[String, JsArray] = Map()
 
-    for (t <- tweets) {
-      tweetList.append(Json.obj(
-        "text" -> t.text,
-        "state" -> t.state.name
-      ))
+    for (t <- tweetMap) {
+      var tweetList:JsArray = Json.arr()
+      for (tweet <- t._2) {
+        tweetList = tweetList.append(Json.obj(
+          "text" -> tweet.text
+        ))
+      }
+      map += (t._1 -> tweetList)
     }
-
-    Ok(tweetList)
-    //    Ok(api.authorize())
-    //    Ok(api.getTweets("donaldtrump", "recent"))
-    //    Ok(api.formattedTweets("donaldtrump"))
+    Ok(Json.toJson(map))
   }
 
 }
