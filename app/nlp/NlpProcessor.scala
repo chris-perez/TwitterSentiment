@@ -12,6 +12,10 @@ import edu.stanford.nlp.util.CoreMap
  */
 object NlpProcessor {
 
+  {
+    def pipeline = new StanfordCoreNLP("MyPropFile.properties")
+  }
+
   def getSentiment(tweet : String) = {
     val pipeline = new StanfordCoreNLP("MyPropFile.properties")
     var sentimentScore : Int = 0
@@ -33,5 +37,17 @@ object NlpProcessor {
     }
     sentimentScore
   }
+
+//more info on the library and implimentation -> https://trainingthemachine.wordpress.com/2014/04/11/sentiment-analysis-using-stanford-corenlp-recursive-deep-learning-models/
+
+  /*
+  * The sentiment labels are:
+  0 - negative
+  1 - somewhat negative
+  2 - neutral
+  3 - somewhat positive
+  4 - positive
+  * */
+
 
 }
