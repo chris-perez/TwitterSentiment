@@ -16,6 +16,16 @@ import scala.concurrent.duration._
 class Application @Inject() (ws: WSClient) extends Controller {
 
   def index = Action {
+    Ok(views.html.map())
+  }
+
+  def getPoly() = Action {
+
+    //Json response example -> https://www.playframework.com/documentation/2.2.x/ScalaJson
+    val json: JsValue = JsObject(Seq(
+    "color" -> JsString("#ff0000")
+    ))
+    Ok(json)
     val api = new TwitterAPI(ws)
     val tweets = api.getStateTweets("donaldtrump")
     val tweetList:JsArray = Json.arr()
