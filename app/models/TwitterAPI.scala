@@ -25,16 +25,20 @@ class TwitterAPI @Inject() (ws: WSClient) {
   val encodedCredentials:String = BaseEncoding.base64().encode(TWITTER_API_CREDENTIALS.getBytes(Charsets.UTF_8))
 
   var endpoint: String = "https://api.twitter.com/1.1/search/tweets.json"
-  var bearerToken = ""
+  var bearerToken = authorize()
   val stateNames = List("Alabama","Alaska","Arizona","Arkansas","California","Colorado","Connecticut","Delaware",
     "Florida","Georgia","Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland",
-    "Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","New Hampshire",
-    "New Jersey","New Mexico","New York","North Carolina","North Dakota","Ohio","Oklahoma","Oregon","Pennsylvania",
-    "Rhode Island","South Carolina","South Dakota","Tennessee","Texas","Utah","Vermont","Virginia","Washington",
-    "West Virginia","Wisconsin","Wyoming")
+    "Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","NewHampshire",
+    "NewJersey","NewMexico","NewYork","NorthCarolina","NorthDakota","Ohio","Oklahoma","Oregon","Pennsylvania",
+    "RhodeIsland","South Carolina","SouthDakota","Tennessee","Texas","Utah","Vermont","Virginia","Washington",
+    "WestVirginia","Wisconsin","Wyoming")
   var states: List[State] = List()
   for (n <- stateNames) {
-    getState(n)::states
+    try {
+      getState(n) :: states
+    } catch {
+      case ex:Exception =>
+    }
   }
 
   def getStateTweets(q: String): List[Tweet] = {
@@ -61,7 +65,7 @@ class TwitterAPI @Inject() (ws: WSClient) {
 
   def getTweets(q: String, result_type: String, lat: Double, long: Double, radius: Double): JsValue = {
     val url = endpoint + "?q=" + q + "&result_type=" + result_type + "&geocode=" + lat + "," + long + "," + radius + "mi"
-    bearerToken = authorize()
+//    bearerToken = authorize()
     val futureResult: Future[JsValue] = ws.url(url).withHeaders("Authorization" -> ("Bearer " + bearerToken)).get().map {
       response => response.json
     }
@@ -70,7 +74,7 @@ class TwitterAPI @Inject() (ws: WSClient) {
 
   def getTweets(q: String, result_type: String, place: String): JsValue = {
     val url = endpoint + "?q=place%3A" + place + " " + q + "&result_type=" + result_type
-    bearerToken = authorize()
+//    bearerToken = authorize()
     val futureResult: Future[JsValue] = ws.url(url).withHeaders("Authorization" -> ("Bearer " + bearerToken)).get().map {
       response => response.json
     }
@@ -79,7 +83,7 @@ class TwitterAPI @Inject() (ws: WSClient) {
 
   def getTweets(q: String, result_type: String): JsValue = {
     val url = endpoint + "?q=" + q + "&result_type=" + result_type
-    bearerToken = authorize()
+//    bearerToken = authorize()
     val futureResult: Future[JsValue] = ws.url(url).withHeaders("Authorization" -> ("Bearer " + bearerToken)).get().map {
       response => response.json
     }
@@ -100,12 +104,19 @@ class TwitterAPI @Inject() (ws: WSClient) {
 
   def getState(name: String): State = {
     val url = "https://api.twitter.com/1.1/geo/search.json?query=" + name
-    bearerToken = authorize()
+//    bearerToken = authorize()
     println(url)
-    val futureResult: Future[String] = ws.url(url).withHeaders("Authorization" -> ("Bearer " + bearerToken)).get().map {
-      response => ((response.json \ "result" \ "places").as[JsArray].head\"id").as[String]
+    try {
+      val futureResult: Future[String] = ws.url(url).withHeaders("Authorization" -> ("Bearer " + bearerToken)).get().map {
+        response => ((response.json \ "result" \ "places").as[JsArray].head \ "id").as[String]
+      }
+      new State(name, Await.result(futureResult, Duration.Inf))
+    } catch{
+      case ex: Exception => {
+        println("Error")
+        throw new Exception
+      }
     }
-    new State(name, Await.result(futureResult, Duration.Inf))
   }
 
   def authorize(): String = {
