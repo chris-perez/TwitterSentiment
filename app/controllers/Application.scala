@@ -50,20 +50,20 @@ class Application @Inject() (ws: WSClient) extends Controller {
     hexVal
   }
 
-  def sentimentMap(lst: List[List[Tweet]]) = {
+  def sentimentMap(lst: Map[String, List[Tweet]]) : JsArray = {
     var sentiment_by_state = Map[String, Float]()
     var color_by_state:JsArray = Json.arr()
-    for(item <- lst) {
-        val len : Float = item.length
-        for(tweet <- item){
+    for((state , value) <- lst) {
+        val len : Float = value.length
+        for(tweet <- value){
             val current_avg: Float = sentiment_by_state(tweet.state.name)
             val delta_avg = NlpProcessor.getSentiment(tweet.text)/len
-            sentiment_by_state + (tweet.state -> current_avg + delta_avg)
+            sentiment_by_state += (state -> (current_avg + delta_avg))
 
         }
-     val temp: String =item.head.state.name
-     val color =sentimentToColor(sentiment_by_state(temp))
-     color_by_state.append(Json.obj("state"-> temp, "color"-> color))
+     //val temp: String = state
+     val color =sentimentToColor(sentiment_by_state(state))
+     color_by_state.append(Json.obj("state"-> state, "color"-> color))
     }
     color_by_state
   }
