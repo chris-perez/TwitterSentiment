@@ -101,6 +101,7 @@ class TwitterAPI @Inject() (ws: WSClient) {
   def getState(name: String): State = {
     val url = "https://api.twitter.com/1.1/geo/search.json?query=" + name
     bearerToken = authorize()
+    println(url)
     val futureResult: Future[String] = ws.url(url).withHeaders("Authorization" -> ("Bearer " + bearerToken)).get().map {
       response => ((response.json \ "result" \ "places").as[JsArray].head\"id").as[String]
     }

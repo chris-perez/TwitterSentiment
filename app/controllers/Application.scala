@@ -6,6 +6,7 @@ import models.TwitterAPI
 import play.api._
 import play.api.libs.ws.WSClient
 import play.api.mvc._
+import play.api.libs.json._
 
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
@@ -17,9 +18,17 @@ class Application @Inject() (ws: WSClient) extends Controller {
   def index = Action {
     val api = new TwitterAPI(ws)
     val tweets = api.getStateTweets("donaldtrump")
-    var map = Map()
+    val tweetList:JsArray = Json.arr()
 
-    Ok(api.authorize())
+    for (t <- tweets) {
+      tweetList.append(Json.obj(
+        "text" -> t.text,
+        "state" -> t.state.name
+      ))
+    }
+
+    Ok(tweetList)
+//    Ok(api.authorize())
 //    Ok(api.getTweets("donaldtrump", "recent"))
 //    Ok(api.formattedTweets("donaldtrump"))
   }
