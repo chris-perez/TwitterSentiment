@@ -15,7 +15,8 @@ class Application extends Controller {
 
     //Json response example -> https://www.playframework.com/documentation/2.2.x/ScalaJson
     val json: JsValue = JsObject(Seq(
-    "color" -> JsString("#ff0000")
+    "Colorado" -> JsString("#ff0000"),
+    "Idaho" -> JsString("#7f00ff")
     ))
     Ok(json)
   }
@@ -25,6 +26,14 @@ class Application extends Controller {
     val score : Int =  NlpProcessor.getSentiment(text)
     val json: JsValue = JsObject(Seq(
       "Score" -> JsNumber(score)
+    ))
+    Ok(json)
+  }
+
+  def query(query : String) = Action {
+    val json: JsValue = JsObject(Seq(
+      "Colorado" -> JsString("#ff0000"),
+      "Idaho" -> JsString("#7f00ff")
     ))
     Ok(json)
   }
