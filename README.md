@@ -2,6 +2,10 @@
 
 Twitter API (Java Library) - https://github.com/twitter/hbc
 Twitter API (Firehose) - https://dev.twitter.com/streaming/reference/get/statuses/firehose
+Consumer Key (API Key)euoX2XoXH9Q5WY4AzVwitVdZf
+Consumer Secret (API Secret)1bxT0CSIcWdNOg9pUhf7wPtsyCzLK99kd7lXRHEdZyK2HgaSs1
+Rate Limit: 180 per 15 minutes
+
 GIS library - https://www.mapbox.com/
 Sentiment Analysis - http://www.alchemyapi.com/api/sentiment/textc.html
 Play Framework - https://www.playframework.com/
