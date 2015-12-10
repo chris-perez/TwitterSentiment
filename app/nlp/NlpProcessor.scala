@@ -12,12 +12,11 @@ import edu.stanford.nlp.util.CoreMap
  */
 object NlpProcessor {
 
-  {
-    def pipeline = new StanfordCoreNLP("MyPropFile.properties")
-  }
+
+  val pipeline = new StanfordCoreNLP("MyPropFile.properties")
+
 
   def getSentiment(tweet : String) = {
-    val pipeline = new StanfordCoreNLP("MyPropFile.properties")
     var sentimentScore : Int = 0
     if (tweet != null && tweet.length > 0) {
       var longest: Int = 0
