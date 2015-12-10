@@ -26,6 +26,10 @@ class Application @Inject() (ws: WSClient) extends Controller {
     "color" -> JsString("#ff0000")
     ))
     Ok(json)
+
+  }
+
+  def getTweets() = Action {
     val api = new TwitterAPI(ws)
     val tweets = api.getStateTweets("donaldtrump")
     val tweetList:JsArray = Json.arr()
@@ -38,10 +42,9 @@ class Application @Inject() (ws: WSClient) extends Controller {
     }
 
     Ok(tweetList)
-//    Ok(api.authorize())
-//    Ok(api.getTweets("donaldtrump", "recent"))
-//    Ok(api.formattedTweets("donaldtrump"))
+    //    Ok(api.authorize())
+    //    Ok(api.getTweets("donaldtrump", "recent"))
+    //    Ok(api.formattedTweets("donaldtrump"))
   }
-
 
 }
