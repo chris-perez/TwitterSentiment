@@ -37,8 +37,38 @@
                     dataType: 'json',
                     success : function load(e){
                         states.setStyle(function(feature){
+
+                            console.log(feature.features)
                             switch (feature.properties.NAME){
+                                case 'Alabama' : return {color : e.color}
+                                case 'Alaska' : return {color : e.color}
+                                case 'Arizona' : return {color : e.color}
+                                case 'Arkansas' : return {color : e.color}
+                                case 'California' : return {color : e.color}
                                 case 'Colorado' : return {color : e.color}
+                                case 'Connecticut' : return {color : e.color}
+                                case 'Delaware' : return {color : e.color}
+                                case 'Florida' : return {color : e.color}
+                                case 'Georgia' : return {color : e.color}
+                                case 'Hawaii' : return {color : e.color}
+                                case 'Idaho' : return {color : e.color}
+                                case 'Arizona' : return {color : e.color}
+                                case 'Arizona' : return {color : e.color}
+                                case 'Arizona' : return {color : e.color}
+                                case 'Arizona' : return {color : e.color}
+                                case 'Arizona' : return {color : e.color}
+                                case 'Arizona' : return {color : e.color}
+                                case 'Arizona' : return {color : e.color}
+                                case 'Arizona' : return {color : e.color}
+                                case 'Arizona' : return {color : e.color}
+                                case 'Arizona' : return {color : e.color}
+                                case 'Arizona' : return {color : e.color}
+                                case 'Arizona' : return {color : e.color}
+                                case 'Arizona' : return {color : e.color}
+                                case 'Arizona' : return {color : e.color}
+
+                                case 'Colorado' : return {color : e.color}
+
                             }
                         });
                     }
