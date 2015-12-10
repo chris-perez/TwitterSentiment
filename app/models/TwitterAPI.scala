@@ -28,12 +28,6 @@ class TwitterAPI @Inject() (ws: WSClient) {
 
   var endpoint: String = "https://api.twitter.com/1.1/search/tweets.json"
   var bearerToken = authorize()
-  /*val stateNames = List("Alabama","Alaska","Arizona","Arkansas","California","Colorado","Connecticut","Delaware",
-    "Florida","Georgia","Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland",
-    "Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","NewHampshire",
-    "NewJersey","NewMexico","NewYork","NorthCarolina","NorthDakota","Ohio","Oklahoma","Oregon","Pennsylvania",
-    "RhodeIsland","South Carolina","SouthDakota","Tennessee","Texas","Utah","Vermont","Virginia","Washington",
-    "WestVirginia","Wisconsin","Wyoming")*/
   var states: List[State] = List()
   var statesJson = Json.parse(Play.classloader.getResourceAsStream("public/json/states.json")).as[JsArray].value
 
