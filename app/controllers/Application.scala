@@ -1,17 +1,22 @@
 package controllers
 
+<<<<<<< HEAD
 import _root_.models.TwitterAPI
 import nlp.NlpProcessor
 import play.api.mvc._
 import play.api.libs.json._
 import edu.stanford.nlp._
+=======
+>>>>>>> twitter-requests
 import javax.inject.Inject
 
 import models.TwitterAPI
 import play.api._
 import play.api.libs.ws.WSClient
+import nlp.NlpProcessor
 import play.api.mvc._
 import play.api.libs.json._
+import edu.stanford.nlp._
 
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
@@ -40,9 +45,9 @@ class Application @Inject() (ws: WSClient) extends Controller {
       "Score" -> JsNumber(score)
     ))
     Ok(json)
-
   }
-  def getTweets(){
+
+  def getTweets() = Action {
     val api = new TwitterAPI(ws)
     val tweets = api.getStateTweets("donaldtrump")
     val tweetList:JsArray = Json.arr()
@@ -55,10 +60,9 @@ class Application @Inject() (ws: WSClient) extends Controller {
     }
 
     Ok(tweetList)
-//    Ok(api.authorize())
-//    Ok(api.getTweets("donaldtrump", "recent"))
-//    Ok(api.formattedTweets("donaldtrump"))
+    //    Ok(api.authorize())
+    //    Ok(api.getTweets("donaldtrump", "recent"))
+    //    Ok(api.formattedTweets("donaldtrump"))
   }
-
 
 }
