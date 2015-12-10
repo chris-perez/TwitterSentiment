@@ -8,6 +8,7 @@ GET     /                           controllers.Application.index
 GET     /updatePoly/                controllers.Application.getPoly()
 
 GET     /getSentiment/:text         controllers.Application.getSentiment(text : String)
+GET     /query/:query               controllers.Application.query(query : String)
 
 GET     /tweets                     controllers.Application.getTweets()
 

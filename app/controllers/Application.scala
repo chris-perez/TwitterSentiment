@@ -26,7 +26,8 @@ class Application @Inject() (ws: WSClient) extends Controller {
 
     //Json response example -> https://www.playframework.com/documentation/2.2.x/ScalaJson
     val json: JsValue = JsObject(Seq(
-    "color" -> JsString("#ff0000")
+    "Colorado" -> JsString("#ff0000"),
+    "Idaho" -> JsString("#7f00ff")
     ))
     Ok(json)
   }
@@ -56,6 +57,14 @@ class Application @Inject() (ws: WSClient) extends Controller {
       map += (t._1 -> tweetList)
     }
     Ok(Json.toJson(map))
+  }
+
+  def query(query : String) = Action {
+    val json: JsValue = JsObject(Seq(
+      "Colorado" -> JsString("#ff0000"),
+      "Idaho" -> JsString("#7f00ff")
+    ))
+    Ok(json)
   }
 
 }

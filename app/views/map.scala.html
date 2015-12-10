@@ -24,6 +24,27 @@
             var state = document.getElementById('state');
             var map = L.mapbox.map('map', 'mapbox.streets').setView([39.50,  -98.35], 5);
 
+            var myControl = L.Control.extend({
+                options : {
+                    position : 'topright'
+                },
+                onAdd : function(map) {
+                 var textInput = L.DomUtil.create('input', 'queryInput');
+                 L.DomEvent.addListener(textInput, 'keyup', this.submit,this)
+                 return textInput;
+                },
+                submit : function(e) {
+                    if (e.keyCode == 13){
+                        query(e.srcElement.value)
+                        console.log(e.srcElement.value);
+                    }
+                }
+            });
+
+            map.addControl(new myControl());
+
+
+
             $.ajax({
                 url: '/assets/geoJson/gz_2010_us_040_00_5m.json',
                 dataType: 'json',
@@ -31,19 +52,68 @@
                     states = L.geoJson(d).addTo(map);
                     }
                  });
-            setInterval(function(){
+            function query(query){
                 $.ajax({
-                    url: '/updatePoly/',
+                    url: '/query/' + query,
                     dataType: 'json',
                     success : function load(e){
                         states.setStyle(function(feature){
                             switch (feature.properties.NAME){
-                                case 'Colorado' : return {color : e.color}
+                                case 'Alabama' : return {color : e.Alabama};
+                                case 'Alaska' : return {color : e.Alaska};
+                                case 'Arizona' : return {color : e.Arizona};
+                                case 'Arkansas' : return {color : e.Arkansas};
+                                case 'California' : return {color : e.California};
+                                case 'Colorado' : return {color : e.Colorado};
+                                case 'Connecticut' : return {color : e.Connecticut};
+                                case 'Delaware' : return {color : e.Delaware};
+                                case 'Florida' : return {color : e.Florida};
+                                case 'Georgia' : return {color : e.Georgia};
+                                case 'Hawaii' : return {color : e.Hawaii};
+                                case 'Idaho' : return {color : e.Idaho};
+                                case 'Illinois' : return {color : e.Illinois};
+                                case 'Indiana' : return {color : e.Indiana};
+                                case 'Iowa' : return {color : e.Iowa};
+                                case 'Kansas' : return {color : e.Kansas};
+                                case 'Kentucky' : return {color : e.Kentucky};
+                                case 'Louisiana' : return {color : e.Louisiana};
+                                case 'Maine' : return {color : e.Maine};
+                                case 'Maryland' : return {color : e.Maryland};
+                                case 'Massachusetts' : return {color : e.Massachusetts};
+                                case 'Michigan' : return {color : e.Michigan};
+                                case 'Minnesota' : return {color : e.Minnesota};
+                                case 'Mississippi' : return {color : e.Mississippi};
+                                case 'Missouri' : return {color : e.Missouri};
+                                case 'Montana' : return {color : e.Montana};
+                                case 'Nebraska' : return {color : e.Nebraska};
+                                case 'Nevada' : return {color : e.Nevada};
+                                case 'New Hampshire' : return {color : e.NewHampshire};
+                                case 'New Jersey' : return {color : e.NewJersey};
+                                case 'New Mexico' : return {color : e.NewMexico};
+                                case 'New York' : return {color : e.NewYork};
+                                case 'North Carolina' : return {color : e.NorthCarolina};
+                                case 'North Dakota' : return {color : e.NorthDakota};
+                                case 'Ohio' : return {color : e.Ohio};
+                                case 'Oklahoma' : return {color : e.Oklahoma};
+                                case 'Oregon' : return {color : e.Oregon};
+                                case 'Pennsylvania' : return {color : e.Pennsylvania};
+                                case 'Rhode Island' : return {color : e.RhodeIsland};
+                                case 'South Carolina' : return {color : e.SouthCarolina};
+                                case 'South Dakota' : return {color : e.SouthDakota};
+                                case 'Tennessee' : return {color : e.Tennessee};
+                                case 'Texas' : return {color : e.Texas};
+                                case 'Utah' : return {color : e.Utah};
+                                case 'Vermont' : return {color : e.Vermont};
+                                case 'Virginia' : return {color : e.Virginia};
+                                case 'Washington' : return {color : e.Washington};
+                                case 'West Virginia' : return {color : e.WestVirginia};
+                                case 'Wisconsin' : return {color : e.Wisconsin};
+                                case 'Wyoming' : return {color : e.Wyoming}
                             }
                         });
                     }
                 });
-            }, 5000);
+            }
         }
     </script>
 </html>
