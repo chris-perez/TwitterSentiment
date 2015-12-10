@@ -1,17 +1,9 @@
 package controllers
 
-//<<<<<<< HEAD
-import _root_.models.TwitterAPI
-import nlp.NlpProcessor
-import play.api.mvc._
-import play.api.libs.json._
-import edu.stanford.nlp._
-//=======
-//>>>>>>> twitter-requests
 import javax.inject.Inject
 
 import models.TwitterAPI
-import play.api._
+import models.Tweet
 import play.api.libs.ws.WSClient
 import nlp.NlpProcessor
 import play.api.mvc._
@@ -47,28 +39,27 @@ class Application @Inject() (ws: WSClient) extends Controller {
     Ok(json)
   }
   //given list of tweet objects,
-  def sentimentToColor( sentiment: float) : String = {
-   val adjustedValue = Int((sentiment/4.0)*255.0)
+  def sentimentToColor( sentiment: Float) : String = {
+   val adjustedValue = ((sentiment/4.0)*255.0).asInstanceOf[Int]//.asInstanceOf[Int]
    val r = adjustedValue
    val g = 30
    val b = 255 - adjustedValue
-   val String hexVal = String.format("#%02x%02x%02x", r, g, b)
+   val hexVal: String = String.format("#%02x%02x%02x", r, g, b)
     hexVal
   }
+
   def sentimentMap(lst: List[List[Tweet]]) = {
-    var sentiment_by_state = Map(string, float)
+    var sentiment_by_state = Map[String, Float]()
     var color_by_state:JsArray = Json.arr()
-    lst.foreach {
-      item =>
-        val len = float(item.length)
-        item.foreach{
-          tweet =>
-            val current_avg = sentiment_by_state(tweet.state)
+    for(item <- lst) {
+        val len : Float = item.length
+        for(tweet <- item){
+            val current_avg: Float = sentiment_by_state(tweet.state.name)
             val delta_avg = NlpProcessor.getSentiment(tweet.text)/len
             sentiment_by_state + (tweet.state -> current_avg + delta_avg)
 
         }
-     val temp: string =item.head.state
+     val temp: String =item.head.state.name
      val color =sentimentToColor(sentiment_by_state(temp))
      color_by_state.append(Json.obj("state"-> temp, "color"-> color))
     }
@@ -84,7 +75,6 @@ class Application @Inject() (ws: WSClient) extends Controller {
     }
     return sum/count
   }
-  def make
   def getTweets() = Action {
     val api = new TwitterAPI(ws)
     val tweets = api.getStateTweets("donaldtrump")
