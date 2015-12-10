@@ -37,6 +37,18 @@ class TwitterAPI @Inject() (ws: WSClient) {
     getState(n)::states
   }
 
+  def getStateTweets(q: String): List[Tweet] = {
+    val tweets:List[Tweet] = List()
+    for (s <- states) {
+      val json = getTweets(q, "recent", s.id)
+      val statuses: Seq[JsValue] = (json \ "statuses").as[JsArray].value
+      for (t <- statuses) {
+        new Tweet((t \ "text").as[String], s)::tweets
+      }
+    }
+    tweets
+  }
+
   def formattedTweets(q: String): String = {
     val json: JsValue = getTweets(q, "recent", 39.50, -98.35, 650)
     val tweets: Seq[JsValue] = (json \ "statuses").as[JsArray].value
@@ -56,8 +68,8 @@ class TwitterAPI @Inject() (ws: WSClient) {
     Await.result(futureResult, Duration.Inf)
   }
 
-  def getTweets(q: String, result_type: String): JsValue = {
-    val url = endpoint + "?q=" + q + "&result_type=" + result_type
+  def getTweets(q: String, result_type: String, place: String): JsValue = {
+    val url = endpoint + "?q=place%3A" + place + " " + q + "&result_type=" + result_type
     bearerToken = authorize()
     val futureResult: Future[JsValue] = ws.url(url).withHeaders("Authorization" -> ("Bearer " + bearerToken)).get().map {
       response => response.json
@@ -65,8 +77,8 @@ class TwitterAPI @Inject() (ws: WSClient) {
     Await.result(futureResult, Duration.Inf)
   }
 
-  def getTweets(q: String, result_type: String, place: String): JsValue = {
-    val url = endpoint + "?q=place%3A" + place + " " + q + "&result_type=" + result_type
+  def getTweets(q: String, result_type: String): JsValue = {
+    val url = endpoint + "?q=" + q + "&result_type=" + result_type
     bearerToken = authorize()
     val futureResult: Future[JsValue] = ws.url(url).withHeaders("Authorization" -> ("Bearer " + bearerToken)).get().map {
       response => response.json

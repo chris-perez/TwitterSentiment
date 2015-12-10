@@ -16,9 +16,13 @@ class Application @Inject() (ws: WSClient) extends Controller {
 
   def index = Action {
     val api = new TwitterAPI(ws)
+    val tweets = api.getStateTweets("donaldtrump")
+    var map = Map()
+
     Ok(api.authorize())
 //    Ok(api.getTweets("donaldtrump", "recent"))
 //    Ok(api.formattedTweets("donaldtrump"))
   }
+
 
 }
