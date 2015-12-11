@@ -63,7 +63,7 @@ class TwitterAPI @Inject() (ws: WSClient) {
   }
 
   def getTweets(q: String, result_type: String, lat: Double, long: Double, radius: Double): JsValue = {
-    val url = endpoint + "?q=" + q + "&result_type=" + result_type + "&geocode=" + lat + "," + long + "," + radius + "mi"
+    val url = endpoint + "?q=" + q + "&result_type=" + result_type + "&geocode=" + lat + "," + long + "," + radius + "mi"  + "&count=100"
     val futureResult: Future[JsValue] = ws.url(url).withHeaders("Authorization" -> ("Bearer " + bearerToken)).get().map {
       response => response.json
     }
@@ -71,7 +71,7 @@ class TwitterAPI @Inject() (ws: WSClient) {
   }
 
   def getTweets(q: String, result_type: String, place: String): JsValue = {
-    val url = endpoint + "?q=place%3A" + place + " " + q + "&result_type=" + result_type
+    val url = endpoint + "?q=place%3A" + place + " " + q + "&result_type=" + result_type + "&count=100"
     val futureResult: Future[JsValue] = ws.url(url).withHeaders("Authorization" -> ("Bearer " + bearerToken)).get().map {
       response => response.json
     }
@@ -79,7 +79,7 @@ class TwitterAPI @Inject() (ws: WSClient) {
   }
 
   def getTweets(q: String, result_type: String): JsValue = {
-    val url = endpoint + "?q=" + q + "&result_type=" + result_type
+    val url = endpoint + "?q=" + q + "&result_type=" + result_type + "&count=100"
     val futureResult: Future[JsValue] = ws.url(url).withHeaders("Authorization" -> ("Bearer " + bearerToken)).get().map {
       response => response.json
     }
