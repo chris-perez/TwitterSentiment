@@ -57,8 +57,8 @@ class SentimentMapper (lst:  Map[String, List[Tweet]]) extends Runnable{
       }
     }
 //    val normList = normalize(sentiment_by_state)
-    val normList = scaled(sentiment_by_state)
-//    val normList = sentiment_by_state
+//    val normList = scaled(sentiment_by_state)
+    val normList = sentiment_by_state
     for((state , value) <- normList) {
       val color = sentimentToColor(value)
       println(state + ": " + value)
