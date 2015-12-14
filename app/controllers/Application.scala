@@ -23,9 +23,7 @@ class Application @Inject() (ws: WSClient) extends Controller {
   }
 
   def getPoly() = Action {
-
     //Json response example -> https://www.playframework.com/documentation/2.2.x/ScalaJson
-
     val json: JsValue = JsObject(Seq(
     "Colorado" -> JsString("#ff0000"),
     "Idaho" -> JsString("#7f00ff")

@@ -12,7 +12,6 @@ class SentimentMapper (lst:  Map[String, List[Tweet]]) extends Runnable{
 
   def run() {
     for((state , value) <- lst) {
-      println("State: " + state)
       val len : Float = value.length
       for(tweet <- value){
         val current_avg = 0
@@ -26,6 +25,7 @@ class SentimentMapper (lst:  Map[String, List[Tweet]]) extends Runnable{
         sentiment_by_state += (state -> 2.0f)
       }
       val color = sentimentToColor(sentiment_by_state(state))
+      println(state + ": " + sentiment_by_state(state))
       color_by_state += (state.replaceAll(" ", "") -> JsString(color))
     }
   }
