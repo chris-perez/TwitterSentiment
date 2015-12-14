@@ -39,16 +39,23 @@ class TwitterAPI @Inject() (ws: WSClient) {
   }
 
   def getStateTweets(q: String): Map[String, List[Tweet]] = {
+    println("Scraping tweets...")
     var tweetMap:Map[String, List[Tweet]] = Map()
     for (s <- states) {
       var tweets:List[Tweet] = List()
-      val json = getTweets(q, "recent", s.id)
-      val statuses: Seq[JsValue] = (json \ "statuses").as[JsArray].value
-      for (t <- statuses) {
-        tweets = new Tweet((t \ "text").as[String], s)::tweets
+      try {
+        val json = getTweets(q, "recent", s.id)
+        val statuses: Seq[JsValue] = (json \ "statuses").as[JsArray].value
+        for (t <- statuses) {
+          tweets = new Tweet((t \ "text").as[String], s)::tweets
+        }
+        tweetMap += (s.name -> tweets)
+      } catch  {
+        case e:Exception => Console.err.println("Reached Twtter rate limit")
       }
-      tweetMap += (s.name -> tweets)
+
     }
+    println("Done scraping tweets... ")
     tweetMap
   }
 
