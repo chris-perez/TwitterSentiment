@@ -25,10 +25,8 @@ class SentimentMapper (lst:  Map[String, List[Tweet]]) extends Runnable{
       if (! sentiment_by_state.contains(state)) {
         sentiment_by_state += (state -> 2.0f)
       }
-      //val temp: String = state
       val color = sentimentToColor(sentiment_by_state(state))
-      color_by_state += (state -> JsString(color))
-      //     color_by_state.append(Json.obj(state -> color))
+      color_by_state += (state.replaceAll(" ", "") -> JsString(color))
     }
   }
 
