@@ -12,6 +12,17 @@
     <style>
         body { margin:0; padding:0; }
         #map { position:absolute; top:0; bottom:0; width:100%; }
+        .legend {
+        line-height: 18px;
+        color: #555;
+        }
+        .legend i {
+        width: 18px;
+        height: 18px;
+        float: left;
+        margin-right: 8px;
+        opacity: 0.7;
+        }
     </style>
 </head>
 <body>
@@ -19,6 +30,15 @@
 </body>
     <script>
         window.onload = function(){
+
+
+            function getColor(d) {
+            return d > 4 ? '#BF0200' :
+                   d > 3  ? '#8F0B39' :
+                   d > 2  ? '#5F1472' :
+                   d > 1  ? '#2F1DAB' :
+                            '#0026E5';
+}
 
             L.mapbox.accessToken = 'pk.eyJ1IjoibHVrZXppbTUiLCJhIjoiV0tta2p0QSJ9.sU76UnZ2bZSQap5uY6XDAA';
             // Create a map in the div #map
@@ -45,7 +65,21 @@
             map.addControl(new myControl());
             //L.marker([39.5, -98.35]).addTo(map);
 
+            var legend = L.control({position : 'bottomright'});
 
+            legend.onAdd = function(map){
+                var div = L.DomUtil.create('div', 'info legend'),
+                    grades = [0,1,2,3,4],
+                    labels = [];
+
+                for (var i = 0; i < grades.length; i++){
+                div.innerHTML += '<i style="background:' + getColor(grades[i] + 1) + '"></i> ' +
+                    grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+                }
+                return div;
+            };
+
+            legend.addTo(map);
 
             $.ajax({
                 url: '/assets/geoJson/gz_2010_us_040_00_5m.json',
