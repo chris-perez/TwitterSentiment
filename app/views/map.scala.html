@@ -4,6 +4,7 @@
     <script src='https://api.mapbox.com/mapbox.js/v2.2.3/mapbox.js'></script>
     <script src='https://code.jquery.com/jquery-1.11.0.min.js'></script>
     <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-pip/v0.0.2/leaflet-pip.js'></script>
+    <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.2.0/leaflet-omnivore.min.js'></script>
     <link href='https://api.mapbox.com/mapbox.js/v2.2.3/mapbox.css' rel='stylesheet' />
     <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
     <meta charset="UTF-8">
@@ -42,6 +43,7 @@
             });
 
             map.addControl(new myControl());
+            //L.marker([39.5, -98.35]).addTo(map);
 
 
 
@@ -50,13 +52,19 @@
                 dataType: 'json',
                 success: function load(d) {
                     states = L.geoJson(d).addTo(map);
+                    states.setStyle({color : "#2E0854", opacity : .4, fillOpacity : 1});
                     }
                  });
+
+            var stateCenters = omnivore.csv('/assets/csv/state_latlon.csv').addTo(map);
+            console.log(stateCenters);
+
             function query(query){
                 $.ajax({
-                    url: '/query/' + query,
+                    url: '/query/' + encodeURIComponent(query),
                     dataType: 'json',
                     success : function load(e){
+                        console.log(e)
                         states.setStyle(function(feature){
                             switch (feature.properties.NAME){
                                 case 'Alabama' : return {color : e.Alabama};
