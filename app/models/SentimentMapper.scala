@@ -62,9 +62,7 @@ class SentimentMapper (lst:  Map[String, List[Tweet]]) extends Runnable{
     for((state , value) <- normList) {
       val color = sentimentToColor(value)
       println(state + ": " + value)
-      color_by_state += (state.replaceAll(" ", "") -> JsString(color))
-      val color = sentimentToColor(sentiment_by_state(state))
-      val obj = Json.obj("color" -> JsString(color), "score" -> sentiment_by_state(state))
+      val obj = Json.obj("color" -> JsString(color), "score" -> value)
       color_by_state += (state.replaceAll(" ", "") -> obj)
     }
   }
