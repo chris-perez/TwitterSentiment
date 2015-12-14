@@ -50,13 +50,15 @@
                 dataType: 'json',
                 success: function load(d) {
                     states = L.geoJson(d).addTo(map);
+                    states.setStyle({color : "#2E0854", opacity : .4, fillOpacity : 1});
                     }
                  });
             function query(query){
                 $.ajax({
-                    url: '/query/' + query,
+                    url: '/query/' + encodeURIComponent(query),
                     dataType: 'json',
                     success : function load(e){
+                        console.log(e)
                         states.setStyle(function(feature){
                             switch (feature.properties.NAME){
                                 case 'Alabama' : return {color : e.Alabama};
