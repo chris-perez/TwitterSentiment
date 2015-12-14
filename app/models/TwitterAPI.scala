@@ -56,7 +56,6 @@ class TwitterAPI @Inject() (ws: WSClient) {
       } catch  {
         case e:Exception => Console.err.println("Reached Twtter rate limit")
       }
-
     }
     println("Done scraping tweets... ")
     tweetMap
