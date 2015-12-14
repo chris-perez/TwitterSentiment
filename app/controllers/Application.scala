@@ -2,8 +2,7 @@ package controllers
 
 import javax.inject.Inject
 
-import models.TwitterAPI
-import models.Tweet
+import models.{SentimentMapper, TwitterAPI, Tweet}
 import play.api.libs.ws.WSClient
 import nlp.NlpProcessor
 import play.api.mvc._
@@ -53,27 +52,33 @@ class Application @Inject() (ws: WSClient) extends Controller {
   }
 
   def sentimentMap(lst: Map[String, List[Tweet]]) : JsObject = {
-    var sentiment_by_state = Map[String, Float]()
+    println("Running sentiment analysis . . .")
+
     var color_by_state:JsObject = Json.obj()
-    for((state , value) <- lst) {
-      println("State: " + state)
-        val len : Float = value.length
-        for(tweet <- value){
-          val current_avg = 0
-          if (sentiment_by_state.contains(state)) {
-            val current_avg: Float = sentiment_by_state(state)
-          }
-          val delta_avg = NlpProcessor.getSentiment(tweet.text)/len
-          sentiment_by_state += (state -> (current_avg + delta_avg))
-        }
-      if (! sentiment_by_state.contains(state)) {
-        sentiment_by_state += (state -> 2.0f)
-      }
-     //val temp: String = state
-     val color =sentimentToColor(sentiment_by_state(state))
-      color_by_state += (state -> JsString(color))
-//     color_by_state.append(Json.obj(state -> color))
-    }
+
+    val sentimentMapper1 = new SentimentMapper(lst.slice(0, lst.size/4))
+    val thread1 = new Thread(sentimentMapper1)
+    thread1.start()
+    val sentimentMapper2 = new SentimentMapper(lst.slice(lst.size/4, lst.size/2))
+    val thread2 = new Thread(sentimentMapper2)
+    thread2.start()
+    val sentimentMapper3 = new SentimentMapper(lst.slice(lst.size/2, 3*(lst.size/4)))
+    val thread3 = new Thread(sentimentMapper3)
+    thread3.start()
+    val sentimentMapper4 = new SentimentMapper(lst.slice(3*(lst.size/4), lst.size+1))
+    val thread4 = new Thread(sentimentMapper4)
+    thread4.start()
+
+    thread1.join()
+    color_by_state = color_by_state.deepMerge(sentimentMapper1.color_by_state)
+    thread2.join()
+    color_by_state = color_by_state.deepMerge(sentimentMapper2.color_by_state)
+    thread3.join()
+    color_by_state = color_by_state.deepMerge(sentimentMapper3.color_by_state)
+    thread4.join()
+    color_by_state = color_by_state.deepMerge(sentimentMapper4.color_by_state)
+
+    println("Finished sentiment analysis.")
 
     color_by_state
   }
