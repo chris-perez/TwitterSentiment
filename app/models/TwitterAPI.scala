@@ -44,6 +44,9 @@ class TwitterAPI @Inject() (ws: WSClient) {
     for (s <- states) {
       var tweets:List[Tweet] = List()
       try {
+        if (q.startsWith("#")) {
+          q.replace("#", "%23")
+        }
         val json = getTweets(q, "recent", s.id)
         val statuses: Seq[JsValue] = (json \ "statuses").as[JsArray].value
         for (t <- statuses) {
@@ -53,7 +56,6 @@ class TwitterAPI @Inject() (ws: WSClient) {
       } catch  {
         case e:Exception => Console.err.println("Reached Twtter rate limit")
       }
-
     }
     println("Done scraping tweets... ")
     tweetMap
