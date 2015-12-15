@@ -26,11 +26,13 @@ class TwitterAPI @Inject() (ws: WSClient) {
   val TWITTER_API_CREDENTIALS = TWITTER_API_KEY + ":" + TWITTER_API_SECRET
   val encodedCredentials:String = BaseEncoding.base64().encode(TWITTER_API_CREDENTIALS.getBytes(Charsets.UTF_8))
 
-  var endpoint: String = "https://api.twitter.com/1.1/search/tweets.json"
+  var endpoint: String = "https://api.twitter.com/1.1/search/tweets.json"   // Twitter endpoint
+  // Authorize Twitter credentials on start
   var bearerToken = authorize()
   var states: List[State] = List()
-  var statesJson = Json.parse(Play.classloader.getResourceAsStream("public/json/states.json")).as[JsArray].value
 
+  // get states from states.json file and create list of State objects
+  var statesJson = Json.parse(Play.classloader.getResourceAsStream("public/json/states.json")).as[JsArray].value
   for (s <- statesJson) {
     val state = s.as[JsObject]
     val name = (state\"name").as[String]
@@ -38,6 +40,11 @@ class TwitterAPI @Inject() (ws: WSClient) {
     states = new State(name, id)::states
   }
 
+  /**
+   * Scrapes tweets from twitter matching a query for every state.
+   * @param q query to search for
+   * @return map of state names to list of Tweet objects
+   */
   def getStateTweets(q: String): Map[String, List[Tweet]] = {
     println("Scraping tweets...")
     var tweetMap:Map[String, List[Tweet]] = Map()
@@ -61,16 +68,15 @@ class TwitterAPI @Inject() (ws: WSClient) {
     tweetMap
   }
 
-  def formattedTweets(q: String): String = {
-    val json: JsValue = getTweets(q, "recent", 39.50, -98.35, 650)
-    val tweets: Seq[JsValue] = (json \ "statuses").as[JsArray].value
-    var results: String = ""
-    for (t <- tweets) {
-      results += "\nText: " + (t \ "text").as[String]
-    }
-    results
-  }
-
+  /**
+   * Searches for tweets by query in a given radius
+   * @param q query
+   * @param result_type should always be 'recent'
+   * @param lat latitude of coordinates
+   * @param long longitude of coordinates
+   * @param radius radius of circle to search in
+   * @return array of tweets as JsValue
+   */
   def getTweets(q: String, result_type: String, lat: Double, long: Double, radius: Double): JsValue = {
     val url = endpoint + "?q=" + q + "&result_type=" + result_type + "&geocode=" + lat + "," + long + "," + radius + "mi"  + "&count=100"
     val futureResult: Future[JsValue] = ws.url(url).withHeaders("Authorization" -> ("Bearer " + bearerToken)).get().map {
@@ -79,6 +85,13 @@ class TwitterAPI @Inject() (ws: WSClient) {
     Await.result(futureResult, Duration.Inf)
   }
 
+  /**
+   *
+   * @param q Gets tweets that match a query and a place
+   * @param result_type should always be 'recent'
+   * @param place id of twitter place to search within
+   * @return array of tweets as JsValue
+   */
   def getTweets(q: String, result_type: String, place: String): JsValue = {
     val url = endpoint + "?q=place%3A" + place + " " + q + "&result_type=" + result_type + "&count=100"
     val futureResult: Future[JsValue] = ws.url(url).withHeaders("Authorization" -> ("Bearer " + bearerToken)).get().map {
@@ -87,6 +100,12 @@ class TwitterAPI @Inject() (ws: WSClient) {
     Await.result(futureResult, Duration.Inf)
   }
 
+  /**
+   * Gets tweets that match a query
+   * @param q query
+   * @param result_type should always be 'recent'
+   * @return array of tweets as JsValue
+   */
   def getTweets(q: String, result_type: String): JsValue = {
     val url = endpoint + "?q=" + q + "&result_type=" + result_type + "&count=100"
     val futureResult: Future[JsValue] = ws.url(url).withHeaders("Authorization" -> ("Bearer " + bearerToken)).get().map {
@@ -95,35 +114,10 @@ class TwitterAPI @Inject() (ws: WSClient) {
     Await.result(futureResult, Duration.Inf)
   }
 
-  def getTweetsByHashTag(hashTag: String, lat: Double, long: Double, radius: Double): JsValue = {
-    getTweets("%23" + hashTag, "recent", lat, long, radius)
-  }
-
-  def getTweetsByHashTag(hashTag: String, place: String): JsValue = {
-    getTweets("%23" + hashTag, "recent", place)
-  }
-
-  def getTweetsByHashTag(hashTag: String): JsValue = {
-    getTweets("%23" + hashTag, "recent")
-  }
-
-  def getState(name: String): State = {
-    val url = "https://api.twitter.com/1.1/geo/search.json?query=" + name
-//    bearerToken = authorize()
-    println(url)
-    try {
-      val futureResult: Future[String] = ws.url(url).withHeaders("Authorization" -> ("Bearer " + bearerToken)).get().map {
-        response => ((response.json \ "result" \ "places").as[JsArray].head \ "id").as[String]
-      }
-      new State(name, Await.result(futureResult, Duration.Inf))
-    } catch{
-      case ex: Exception => {
-        println("Error")
-        throw new Exception
-      }
-    }
-  }
-
+  /**
+   * Authorizes twitter credentials.
+   * @return Bearer token to be used in header of each request to Twitter
+   */
   def authorize(): String = {
     val url = "https://api.twitter.com/oauth2/token"
     val futureResult: Future[String] = ws.url(url)
@@ -132,6 +126,4 @@ class TwitterAPI @Inject() (ws: WSClient) {
       )
     Await.result(futureResult, Duration.Inf)
   }
-
-
 }

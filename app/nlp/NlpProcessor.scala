@@ -15,7 +15,11 @@ object NlpProcessor {
 
   val pipeline = new StanfordCoreNLP("MyPropFile.properties")
 
-
+  /**
+   * Gets the sentiment of a string
+   * @param tweet string to do sentiment analysis on
+   * @return sentiment score
+   */
   def getSentiment(tweet : String) = {
     var sentimentScore : Int = 0
     if (tweet != null && tweet.length > 0) {

@@ -10,19 +10,11 @@ class SentimentMapper (lst:  Map[String, List[Tweet]]) extends Runnable{
   var sentiment_by_state = Map[String, Float]()
   var color_by_state:JsObject = Json.obj()
 
-  def normalize(lst:Map[String, Float]) :Map[String, Float] = {
-    var total = 0.0f
-    for((state , value) <- lst) {
-      total += Math.pow(value, 2).asInstanceOf[Float]
-    }
-    total = Math.sqrt(total).asInstanceOf[Float]
-    var normList = Map[String, Float]()
-    for((state , value) <- lst) {
-      normList += (state -> (value/total) * 4.0f)
-    }
-    normList
-  }
-
+  /**
+   * Scales values in map to make lowest value 0 and highest value 4
+   * @param lst map of state to average score
+   * @return map of states to scaled scores
+   */
   def scaled(lst:Map[String, Float]) :Map[String, Float] = {
     var max = 0.0f
     var min = 4.0f
@@ -41,6 +33,9 @@ class SentimentMapper (lst:  Map[String, List[Tweet]]) extends Runnable{
     normList
   }
 
+  /**
+   * Runs sentiment analysis for each state and maps the average value of each state to a color.
+   */
   def run() {
     for((state , value) <- lst) {
       val len : Float = value.length
@@ -56,7 +51,6 @@ class SentimentMapper (lst:  Map[String, List[Tweet]]) extends Runnable{
         sentiment_by_state += (state -> 2.0f)
       }
     }
-//    val normList = normalize(sentiment_by_state)
 //    val normList = scaled(sentiment_by_state)
     val normList = sentiment_by_state
     for((state , value) <- normList) {
@@ -67,6 +61,11 @@ class SentimentMapper (lst:  Map[String, List[Tweet]]) extends Runnable{
     }
   }
 
+  /**
+   * Converts sentiment score to a color.
+   * @param sentiment sentiment score
+   * @return hex color as string
+   */
   def sentimentToColor( sentiment: Float) : String = {
     val adjustedValue = ((sentiment/4.0)*255.0).asInstanceOf[Int]//.asInstanceOf[Int]
     val r = adjustedValue
