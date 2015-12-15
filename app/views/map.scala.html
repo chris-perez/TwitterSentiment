@@ -6,6 +6,8 @@
     <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-pip/v0.0.2/leaflet-pip.js'></script>
     <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.2.0/leaflet-omnivore.min.js'></script>
     <link href='https://api.mapbox.com/mapbox.js/v2.2.3/mapbox.css' rel='stylesheet' />
+    <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-label/v0.2.1/leaflet.label.js'></script>
+    <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-label/v0.2.1/leaflet.label.css' rel='stylesheet' />
     <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
     <meta charset="UTF-8">
     <title>MapTest</title>
@@ -90,7 +92,7 @@
                     }
                  });
 
-            var stateCenters = omnivore.csv('/assets/csv/state_latlon.csv').addTo(map);
+            stateCenters = omnivore.csv('/assets/csv/state_latlon.csv').addTo(map);
             console.log(stateCenters);
 
             function query(query){
@@ -98,7 +100,7 @@
                     url: '/query/' + encodeURIComponent(query),
                     dataType: 'json',
                     success : function load(e){
-                        console.log(e)
+                        console.log(e);
                         states.setStyle(function(feature){
                             switch (feature.properties.NAME){
                                 case 'Alabama' : return {color : e.Alabama.color};
@@ -153,13 +155,13 @@
                                 case 'Wyoming' : return {color : e.Wyoming.color}
                             }
                         });
-                        stateCenters.setStyle(function(feature){
+                        stateCenters.bindLabel(function(feature){
                             switch (feature.properties.NAME){
-                                case 'Alabama' : return {title : e.Alabama.score};
+                                case 'Alabama' : return e.Alabama.score;
                                 case 'Alaska' : return {title : e.Alaska.score};
                                 case 'Arizona' : return {title : e.Arizona.score};
                                 case 'Arkansas' : return {title : e.Arkansas.score};
-                                case 'California' : return {title : e.California.score};
+                                case 'California' : return e.California.score.toString();
                                 case 'Colorado' : return {title : e.Colorado.score};
                                 case 'Connecticut' : return {title : e.Connecticut.score};
                                 case 'Delaware' : return {title : e.Delaware.score};
@@ -206,7 +208,7 @@
                                 case 'Wisconsin' : return {title : e.Wisconsin.score};
                                 case 'Wyoming' : return {title : e.Wyoming.score}
                             }
-                        });
+                        }).addTo(map);
                     }
                 });
             }
